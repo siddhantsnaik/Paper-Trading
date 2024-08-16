@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\OnPaper",
+    "\\OnPaper\\OnPaper",
+    "\\OnPaper\\OnPaper\\OnPaper"
   ],
+  "SelectedNode": "\\OnPaper\\OnPaper\\OnPaper\\OnPaper.csproj",
   "PreviewInSolutionExplorer": false
 }
