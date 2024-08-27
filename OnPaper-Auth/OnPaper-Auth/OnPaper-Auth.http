@@ -1,0 +1,6 @@
+@OnPaper_Auth_HostAddress = http://localhost:5095
+
+GET {{OnPaper_Auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
