@@ -1,43 +1,42 @@
+name: Build and deploy .NET Core application to Azure Container App
+
 on:
   push:
     branches:
     - main
+
 env:
   DOTNET_CORE_VERSION: 7.0.x
   CONTAINER_APP_ENVIRONMENT_NAME: managedEnv20240830003908
   RESOURCE_GROUP: OnPaper
   CONTAINER_REGISTRY_NAME: onpaper
   CONTAINER_REGISTRY_LOGIN_SERVER: onpaper.azurecr.io
+
 jobs:
   BuildAndDeployContainerApp:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-        - appsourcepath: OnPaper/OnPaper
-          containerappname: onpaper-container-app
-        - appsourcepath: OnPaper/OnPaper.Client
-          containerappname: onpaper.client-container-app
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
+
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+
     - name: Azure login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.managedEnv20240830003908_SPN }}
+
     - name: Container App deploy
       uses: azure/container-apps-deploy-action@v1
       with:
-        appSourcePath: ${{ github.workspace }}/${{ matrix.appsourcepath }}
+        appSourcePath: ${{ github.workspace }}/OnPaper-Auth
         acrName: ${{ env.CONTAINER_REGISTRY_NAME }}
         acrUsername: ${{ secrets.OnPaper_USERNAME_660F }}
         acrPassword: ${{ secrets.OnPaper_PASSWORD_660F }}
-        imageToBuild: ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/${{ matrix.containerappname }}:${{ github.sha }}
-        containerAppName: ${{ matrix.containerappname }}
+        imageToBuild: ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/onpaper-auth:${{ github.sha }}
+        containerAppName: onpaper-auth-container-app
         containerAppEnvironment: ${{ env.CONTAINER_APP_ENVIRONMENT_NAME }}
         resourceGroup: ${{ env.RESOURCE_GROUP }}
