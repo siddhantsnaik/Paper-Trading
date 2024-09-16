@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       matrix:
         include:
-        - appsourcepath: OnPaper/OnPaper/OnPaper
+        - appsourcepath: OnPaper/OnPaper
           containerappname: onpaper-container-app
         - appsourcepath: OnPaper/OnPaper/OnPaper.Client
           containerappname: onpaper-client-container-app
