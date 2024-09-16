@@ -15,10 +15,10 @@ jobs:
       fail-fast: true
       matrix:
         include:
-        - appsourcepath: OnPaper/OnPaper
+        - appsourcepath: OnPaper/OnPaper/OnPaper
           containerappname: onpaper-container-app
-        - appsourcepath: OnPaper/OnPaper.Client
-          containerappname: onpaper.client-container-app
+        - appsourcepath: OnPaper/OnPaper/OnPaper.Client
+          containerappname: onpaper-client-container-app
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
