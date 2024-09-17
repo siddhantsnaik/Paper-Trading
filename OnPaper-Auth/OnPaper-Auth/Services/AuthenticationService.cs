@@ -2,6 +2,8 @@
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using OnPaper_Auth.Abstractions;
+using Serilog;
+
 
 namespace OnPaper_Auth.Services;
 public class AuthenticationService
@@ -10,9 +12,11 @@ public class AuthenticationService
     private readonly string _pathToServiceAccountKey = "./OnPaper-Auth_Config/onpaper-auth-firebase-adminsdk-58xcs-f23cdc41a4.json";
 
     private IdentityToolKitEndpointFactory factory = new();
+    
 
-    public AuthenticationService()
+public AuthenticationService()
     {
+        
         //TODO: Fix with dependency injection
         var secretsServiceAccountKey = Environment.GetEnvironmentVariable("FIREBASE_SERVICE_ACCOUNT_JSON");
         var secretsWebAPIKey = Environment.GetEnvironmentVariable("FIREBASE_WEB_API_KEY");
@@ -27,17 +31,25 @@ public class AuthenticationService
         catch (ArgumentNullException)
         {
             Console.WriteLine("Service account key not found in environment variables");
+            Log.Error("Service account key not found in environment variables");
             throw;
         }
         catch (FileNotFoundException)
         {
             Console.WriteLine("Service account key not found in the file");
+            Log.Error("Service account key not found in the file");
+            throw;
+        }
+        catch (NullReferenceException)
+        {
+            Log.Error("Something to do with the Firebase Web API Key");
             throw;
         }
         catch (Exception)
         {
+            Log.Error("Something went wrong with the Firebase Admin SDK");
             Console.WriteLine("Service account key not found in environment variables or the file");
-            throw new NullReferenceException();
+            throw;
         }
 
         if (FirebaseApp.DefaultInstance == null)

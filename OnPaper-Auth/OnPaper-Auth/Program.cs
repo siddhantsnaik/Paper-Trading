@@ -1,6 +1,12 @@
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+var log = new LoggerConfiguration()
+    .Enrich.FromLogContext()    
+    .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
