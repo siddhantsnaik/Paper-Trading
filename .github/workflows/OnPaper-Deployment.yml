@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - appsourcepath: OnPaper
+          - appsourcepath: OnPaper/OnPaper
             containerappname: onpaper-container-app
 
     steps:
@@ -42,7 +42,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/${{ matrix.containerappname }}:latest ${{ matrix.appsourcepath }}
+        docker build -t ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/${{ matrix.containerappname }}:latest -f ${{ matrix.appsourcepath }}/Dockerfile ${{ matrix.appsourcepath }}
         docker push ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/${{ matrix.containerappname }}:latest
 
     - name: Deploy to Azure Container Apps
