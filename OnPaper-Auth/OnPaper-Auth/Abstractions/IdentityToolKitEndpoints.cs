@@ -56,6 +56,12 @@ namespace OnPaper_Auth.Abstractions
             _apiKey = apiKey;
             _httpClient = new HttpClient();
         }
+        public IdentityToolKitEndpoint()
+        {
+            _endpoint = string.Empty;
+            _apiKey = string.Empty;
+            _httpClient = new HttpClient();
+        }
 
         private string GetEndpoint(IdentityToolKitEndpointsEnum endpoint)
         {
@@ -97,11 +103,22 @@ namespace OnPaper_Auth.Abstractions
             var response = await _httpClient.PostAsync(_endpoint, content);
             return await response.Content.ReadAsStringAsync();
         }
+        
     }
 
-    public class IdentityToolKitEndpointFactory(string apiKey)
+    public class IdentityToolKitEndpointFactory
     {
-        private readonly string _apiKey = apiKey;
+        private string _apiKey;
+
+        public IdentityToolKitEndpointFactory(string apiKey)
+        {
+            this._apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+        }
+
+        public IdentityToolKitEndpointFactory()
+        {
+            this._apiKey = string.Empty;
+        }
 
         public IdentityToolKitEndpoint CreateEndpoint(IdentityToolKitEndpointsEnum endpointEnum)
         {
