@@ -2,5 +2,12 @@
 
 GET {{OnPaper_Auth_HostAddress}}/weatherforecast/
 Accept: application/json
+###
+
+POST {{OnPaper_Auth_HostAddress}}/auth/register
+Accept: application/json
+
 
 ###
+POST {{OnPaper_Auth_HostAddress}}/auth/login
+Accept: application/json
