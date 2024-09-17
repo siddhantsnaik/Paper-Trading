@@ -25,7 +25,7 @@ public AuthenticationService()
         try
         {
             credentialFromJson = GoogleCredential.FromJson(secretsServiceAccountKey);
-            credentialFromFile = GoogleCredential.FromFile(_pathToServiceAccountKey);
+            //credentialFromFile = GoogleCredential.FromFile(_pathToServiceAccountKey);
             factory = new IdentityToolKitEndpointFactory(secretsWebAPIKey);
         }
         catch (ArgumentNullException)
@@ -56,7 +56,7 @@ public AuthenticationService()
         {
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = credentialFromFile ?? credentialFromJson
+                Credential = credentialFromJson ?? credentialFromFile
             });
         }
     }
