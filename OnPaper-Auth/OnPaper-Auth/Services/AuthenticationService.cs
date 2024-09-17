@@ -16,8 +16,19 @@ public class AuthenticationService
     {
         //TODO: Fix with dependency injection
         var secretsServiceAccountKey = Environment.GetEnvironmentVariable("FIREBASE_SERVICE_ACCOUNT_JSON");
-        var credentialFromJson = GoogleCredential.FromJson(secretsServiceAccountKey);
-        var credentialFromFile = GoogleCredential.FromFile(_pathToServiceAccountKey);
+        var credentialFromJson = default(GoogleCredential);
+        var credentialFromFile = default(GoogleCredential);
+        try
+        {
+            credentialFromJson = GoogleCredential.FromJson(secretsServiceAccountKey);
+            credentialFromFile = GoogleCredential.FromFile(_pathToServiceAccountKey);
+        }
+        catch (ArgumentNullException)
+        {
+            Console.WriteLine("Service account key not found in environment variables or The file");
+            throw new NullReferenceException();
+        }
+        
 
         if (FirebaseApp.DefaultInstance == null)
         {
