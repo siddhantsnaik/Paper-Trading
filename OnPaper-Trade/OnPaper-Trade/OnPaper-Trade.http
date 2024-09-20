@@ -1,0 +1,6 @@
+@OnPaper_Trade_HostAddress = http://localhost:5159
+
+GET {{OnPaper_Trade_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
