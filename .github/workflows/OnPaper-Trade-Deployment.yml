@@ -4,8 +4,8 @@ on:
   push:
     branches:
     - main
-    # paths:
-    #   - 'OnPaper-Trade/**'
+    paths:
+      - 'OnPaper-Trade/**'
 
 env:
   DOTNET_CORE_VERSION: 7.0.x
