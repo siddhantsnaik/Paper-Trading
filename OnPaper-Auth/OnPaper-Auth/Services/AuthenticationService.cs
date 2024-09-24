@@ -64,15 +64,25 @@ public AuthenticationService()
     public async Task<string> RegisterAsync(string userName, string fullName, string email, string password)
     {
         Random rnd = new Random();
-        return (await FirebaseAuth.DefaultInstance.CreateUserAsync(new UserRecordArgs()
+
+        try
         {
-            DisplayName = fullName,
-            Uid = userName,
-            PhotoUrl = $"https://picsum.photos/id/{rnd.Next(1, 64)}/200/",
-            Email = email,
-            EmailVerified = false,
-            Password = password
-        })).Uid;
+            var response = await FirebaseAuth.DefaultInstance.CreateUserAsync(new UserRecordArgs()
+            {
+                DisplayName = fullName,
+                Uid = userName,
+                PhotoUrl = $"https://picsum.photos/id/{rnd.Next(1, 64)}/200/",
+                Email = email,
+                EmailVerified = false,
+                Password = password
+            });
+        }
+        catch (FirebaseAuthException e)
+        {
+            Log.Error(e.Message);
+            return e.Message;
+        }
+        return await AuthenticateAsync(email,password,true);
     }
 
     public async Task<string> AuthenticateAsync(string email, string password, bool returnSecureToken)
