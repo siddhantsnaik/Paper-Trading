@@ -3,6 +3,7 @@ using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using OnPaper_Auth.Abstractions;
 using Serilog;
+using System.Net;
 
 
 namespace OnPaper_Auth.Services;
@@ -80,9 +81,9 @@ public AuthenticationService()
         catch (FirebaseAuthException e)
         {
             Log.Error(e.Message);
-            return e.Message;
+            return e.Message; // Fix: Return a valid HttpContent instance
         }
-        return await AuthenticateAsync(email,password,true);
+        return await AuthenticateAsync(email, password, true);
     }
 
     public async Task<string> AuthenticateAsync(string email, string password, bool returnSecureToken)
