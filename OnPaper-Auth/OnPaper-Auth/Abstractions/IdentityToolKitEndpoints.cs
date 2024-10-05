@@ -96,12 +96,38 @@ namespace OnPaper_Auth.Abstractions
                 _ => throw new ArgumentException("Invalid endpoint", nameof(endpoint))
             };
         }
+        private string FormatErrorMessage(string errorMessage)
+        {
+            return $@"
+            {{
+                ""error"": {{
+                    ""errors"": [
+                        {{
+                            ""domain"": ""global"",
+                            ""reason"": ""invalid"",
+                            ""message"": ""{errorMessage}""
+                        }}
+                    ],
+                    ""code"": 400,
+                    ""message"": ""{errorMessage}""
+                }}
+            }}";
+        }
 
         public async Task<string> SendRequestAsync(object payload)
         {
-            var content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(_endpoint, content);
-            return await response.Content.ReadAsStringAsync();
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(_endpoint, content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return responseContent;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error sending request: {e.Message}");
+                return FormatErrorMessage(e.Message.Split('\n')[0]);
+            }
         }
         
     }
