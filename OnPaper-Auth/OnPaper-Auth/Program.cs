@@ -1,4 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
+using OnPaper_Auth.DependencyInj;
+using OnPaper_Auth.Services;
 using Serilog;
+
 var AllowSpecificOrigins = "_AllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,12 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 // Add services to the container.
+FirebaseAppInj.ConfigureServices(builder.Services);
+
+// Register AuthenticationService
+builder.Services.AddTransient<AuthenticationService>();
+builder.Services.AddTransient<UserDataServices>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
