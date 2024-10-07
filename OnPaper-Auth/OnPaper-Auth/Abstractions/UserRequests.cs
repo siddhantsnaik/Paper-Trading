@@ -16,7 +16,7 @@ public class UserLoginRequest
 
     
 }
-
+//TODO: Add UID update too?
 public class UserUpdateRequest
 {
     public required string IdToken { get; set; }
