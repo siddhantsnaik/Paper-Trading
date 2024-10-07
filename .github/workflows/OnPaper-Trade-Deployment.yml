@@ -39,6 +39,6 @@ jobs:
         acrUsername: ${{ secrets.OnPaper_USERNAME_660F }}
         acrPassword: ${{ secrets.OnPaper_PASSWORD_660F }}
         imageToBuild: ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/onpaper-trade:${{ github.sha }}
-        containerAppName: onpaper-trade-container-app
+        containerAppName: onpaper-trade
         containerAppEnvironment: ${{ env.CONTAINER_APP_ENVIRONMENT_NAME }}
         resourceGroup: ${{ env.RESOURCE_GROUP }}
