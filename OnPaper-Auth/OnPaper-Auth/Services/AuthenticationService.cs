@@ -130,8 +130,6 @@ public AuthenticationService(FirebaseApp firebaseApp, FirebaseAuth firebaseAuth)
         return await factory.CreateEndpoint(IdentityToolKitEndpointsEnum.DeleteToken).SendRequestAsync(new { idToken });
     }
 
-    public async Task<string> 
-
     public void Dispose()
     {
         _firebaseApp.Delete();
