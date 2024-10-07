@@ -1,8 +1,28 @@
+using OnPaper_Trade.Services;
+using OnPaper_Trade.DependencyInj;
+
+var AllowSpecificOrigins = "_AllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost",
+                                              "http://localhost:1420",
+                                              "http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                      });
+});
+
+FirebaseAppInj.ConfigureServices(builder.Services);
+
+builder.Services.AddTransient<TradeService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
