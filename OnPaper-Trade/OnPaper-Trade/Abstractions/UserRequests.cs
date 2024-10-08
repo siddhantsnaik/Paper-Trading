@@ -26,3 +26,26 @@ public class ReadUserRequest
     public required string AuthToken { get; set; }
     public required string UserID { get; set; }
 }
+
+public class CustomerDetailsResponse
+{
+    public SuccessData Success { get; set; }
+    public int Status { get; set; }
+    public object Error { get; set; }
+}
+
+public class SuccessData
+{
+    public Dictionary<string, string> exg_trade_date { get; set; }
+    public Dictionary<string, string> exg_status { get; set; }
+    public Dictionary<string, string> segments_allowed { get; set; }
+    public string idirect_userid { get; set; }
+    public string session_token { get; set; }
+    public string idirect_user_name { get; set; }
+    public string idirect_ORD_TYP { get; set; }
+    public string idirect_lastlogin_time { get; set; }
+    public string mf_holding_mode_popup_flg { get; set; }
+    public string commodity_exchange_status { get; set; }
+    public string commodity_trade_date { get; set; }
+    public string commodity_allowed { get; set; }
+}
