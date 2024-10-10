@@ -83,7 +83,7 @@ public class tradeController : Controller
 
         string jsonPayload = $"{{" +
             $"\"SessionToken\": \"{apisession}\"," +
-            $"\"AppKey\": \"q3P9zr46is8179992Z154Am8vd89+!1I\"" +
+            $"\"AppKey\": \"+9352295AT1652ns9X364f81F298A115\"" +
             $"}}";
 
         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
