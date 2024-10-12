@@ -89,14 +89,17 @@ public class FirebaseRealtimeDatabaseEndpoint
                     break;
 
                 case FirebaseRealtimeDatabaseEndpointsEnum.GetPoints:
-                    url += "/points.json";
+                    url += "/Points.json";
                     response = await _httpClient.GetAsync(AppendAuth(url));
                     break;
 
                 case FirebaseRealtimeDatabaseEndpointsEnum.AddPoints:
-                    url += "/points.json";
+                    url += ".json";
+                    Console.WriteLine(url);
                     content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+                    Console.WriteLine(payload);
                     response = await _httpClient.PatchAsync(AppendAuth(url), content);
+                    Console.WriteLine($"Headers: {response.Headers} \n Response: {response.Content}");
                     break;
 
                 case FirebaseRealtimeDatabaseEndpointsEnum.UpdateWatchlist:
@@ -166,12 +169,12 @@ public class FirebaseRealtimeDatabaseEndpoint
         catch (HttpRequestException e)
         {
             Console.WriteLine($"HTTP request error: {e.ToString()}");
-            throw;
+            return FormatErrorMessage($"HTTP request error: {e.Message.Split('\n')[0]}" );
         }
         catch (Exception e)
         {
             Console.WriteLine($"Error sending request: {e.Message}");
-            return FormatErrorMessage(e.Message);
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
     }
 

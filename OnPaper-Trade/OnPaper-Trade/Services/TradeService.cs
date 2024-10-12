@@ -60,12 +60,12 @@ public class TradeService
         }
         catch (FirebaseAuthException e) {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch(Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -90,12 +90,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -116,12 +116,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -153,12 +153,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -192,12 +192,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -229,12 +229,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -259,12 +259,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -289,12 +289,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
@@ -313,12 +313,12 @@ public class TradeService
         catch (FirebaseAuthException e)
         {
             response = -999;
-            throw;
+            
         }
         catch (Exception e)
         {
             response = -999;
-            throw;
+            
         }
 
         return response;
@@ -334,28 +334,28 @@ public class TradeService
                 return FormatErrorMessage("Invalid User Session");
             }
 
-            var points = await GetPointsAsync(authToken, userId);
+             var Points = await GetPointsAsync(authToken, userId);
 
-            if (points == -999)
+            if (Points == -999)
             {
                 return FormatErrorMessage("Error getting points");
             }
 
-            points += addPoints;
+            Points += addPoints;
 
 
             var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddPoints, userId, points);
+            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddPoints, userId, new { Points });
         }
         catch (FirebaseAuthException e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
         catch (Exception e)
         {
             response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            throw;
+            
         }
 
         return response;
