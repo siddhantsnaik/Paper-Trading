@@ -56,7 +56,20 @@ public class UserDataServices
             };
 
             var updatedUser = await _firebaseAuth.UpdateUserAsync(profileUpdate);
-            return JsonSerializer.Serialize(updatedUser);
+
+            UserSession userSession = new UserSession()
+            {
+                localId = updatedUser.Uid,
+                email = updatedUser.Email,
+                idToken = idToken,
+                expiresIn = "3600",
+                kind = "OnPaperAuth#UpdateUserResponse",
+                displayName = updatedUser.DisplayName,
+                profilePicture = updatedUser.PhotoUrl,
+                registered = true,
+                phoneNumber = updatedUser.PhoneNumber
+            };
+            return JsonSerializer.Serialize(userSession);
         }
         catch (FirebaseAuthException e)
         {
