@@ -2,6 +2,7 @@
 using FirebaseAdmin.Auth;
 using OnPaper_Auth.Abstractions;
 using Serilog;
+using System.Text.Json;
 
 
 namespace OnPaper_Auth.Services;
@@ -55,7 +56,7 @@ public class UserDataServices
             };
 
             var updatedUser = await _firebaseAuth.UpdateUserAsync(profileUpdate);
-            return updatedUser.Uid;
+            return JsonSerializer.Serialize(updatedUser);
         }
         catch (FirebaseAuthException e)
         {
