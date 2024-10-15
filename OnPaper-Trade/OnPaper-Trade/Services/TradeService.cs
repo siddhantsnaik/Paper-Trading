@@ -19,26 +19,26 @@ public class TradeService
     private string FormatErrorMessage(string errorMessage)
     {
         return $@"
-            {{
-                ""error"": {{
-                    ""errors"": [
-                        {{
-                            ""domain"": ""global"",
-                            ""source"": ""API"",
-                            ""reason"": ""invalid"",
-                            ""message"": ""{errorMessage}""
-                        }}
-                    ],
-                    ""code"": 400,
-                    ""message"": ""{errorMessage}""
-                }}
-            }}";
+                {{
+                    ""error"": {{
+                        ""errors"": [
+                            {{
+                                ""domain"": ""global"",
+                                ""source"": ""API"",
+                                ""reason"": ""invalid"",
+                                ""message"": ""{errorMessage}""
+                            }}
+                        ],
+                        ""code"": 400,
+                        ""message"": ""{errorMessage}""
+                    }}
+                }}";
     }
 
-    public async Task<bool> IsValidUser(string authToken, string userID) 
+    public async Task<bool> IsValidUser(string authToken, string userID)
     {
         FirebaseToken token = await _firebaseAuth.VerifyIdTokenAsync(authToken);
-        if (token == null || token.Uid != userID)
+        if (token is null || token.Uid != userID)
         {
             Console.WriteLine($"Firebase Token: {token.Uid} Passed Token: {userID} AreEqual?: {token.Uid == userID}");
             return false;
@@ -46,125 +46,108 @@ public class TradeService
         return true;
     }
 
-    public async Task<string> CreateTradeAsync(string authToken,string userId, Trade trade)
+    public async Task<string> CreateTradeAsync(string authToken, string userId, Trade trade)
     {
-        var response = "";
-        try
+        if (!await IsValidUser(authToken, userId))
         {
-            if (!(await IsValidUser(authToken, userId)))
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.CreateTrade, userId, trade);
-        }
-        catch (FirebaseAuthException e) {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
-        }
-        catch(Exception e)
-        {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage("Invalid User Session");
         }
 
-        return response;
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
+        try
+        {
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.CreateTrade, userId, trade);
+        }
+        catch (FirebaseAuthException e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
+        catch (Exception e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
     }
 
     public async Task<string> ReadTradeAsync(string authToken, string userId, string tradeId)
     {
-        var response = "";
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.ReadTrade, userId, tradeId);
+            var response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.ReadTrade, userId, tradeId);
             if (string.IsNullOrEmpty(response))
             {
                 return FormatErrorMessage("Trade not found");
             }
+            return response;
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
 
     private async Task<string> UpdateTradeAsync(string authToken, string userId, Trade trade)
     {
-        var response = "";
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.UpdateTrade, userId, trade);
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.UpdateTrade, userId, trade);
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
 
     public async Task<string> DeleteTradeAsync(string authToken, string userId, string tradeId)
     {
-        var response = "";
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var checkTrade = JsonConvert.DeserializeObject<Trade>(await ReadTradeAsync(authToken, userId, tradeId));
+        if (checkTrade is null)
+        {
+            return FormatErrorMessage("Trade not found");
+        }
+        if (checkTrade.IsActive)
+        {
+            return FormatErrorMessage("Trade is still Active, Please Exit it");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var checkTrade = JsonConvert.DeserializeObject<Trade>(await ReadTradeAsync(authToken, userId, tradeId));
-            if (checkTrade == null)
-            {
-                return FormatErrorMessage("Trade not found");
-            }
-            if (checkTrade.IsActive)
-            {
-                return FormatErrorMessage("Trade is still Active, Please Exit it");
-            }
-
-
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.DeleteTrade, userId, tradeId);
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.DeleteTrade, userId, tradeId);
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
-
-    
 
     public async Task<string> EnterTradeAsync(string authToken, string userId, Trade trade)
     {
@@ -173,191 +156,141 @@ public class TradeService
         trade.IsActive = true;
         trade.TakeProfit = null;
         trade.StopLoss = null;
-        var response = "";
-        try
-        {
-            decimal points = await GetPointsAsync(authToken, userId);
-            if (points == -999)
-            {
-                return FormatErrorMessage("Error getting points");
-            }
-            if (points < 100 || trade.EntryPrice > points)
-            {
-                return FormatErrorMessage("Insufficient Points");
-            }
 
-            await AddPointsAsync(authToken, userId, (decimal)-trade.EntryPrice);
-            return await CreateTradeAsync(authToken, userId, trade);
-        }
-        catch (FirebaseAuthException e)
+        decimal points = await GetPointsAsync(authToken, userId);
+        if (points == -999)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage("Error getting points");
         }
-        catch (Exception e)
+        if (points < 100 || trade.EntryPrice > points)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage("Insufficient Points");
         }
 
-        return response;
+        await AddPointsAsync(authToken, userId, (decimal)-trade.EntryPrice);
+        return await CreateTradeAsync(authToken, userId, trade);
     }
 
     public async Task<string> ExitTradeAsync(string authToken, string userId, string tradeId, decimal exitPrice, long exitTime)
     {
-        var response = "";
-        try
+        var trade = JsonConvert.DeserializeObject<Trade>(await ReadTradeAsync(authToken, userId, tradeId));
+        if (trade is null)
         {
-            var trade = JsonConvert.DeserializeObject<Trade>(await ReadTradeAsync(authToken, userId, tradeId));
-            if (trade == null)
-            {
-                return FormatErrorMessage("Trade not found");
-            }            
-            if (!trade.IsActive)
-            {
-                return FormatErrorMessage("Trade is not Active");
-            }
-
-            trade.ExitPrice = exitPrice;
-            trade.ExitTime = exitTime;
-            trade.IsActive = false;
-            trade.TakeProfit = trade.ExitPrice - trade.EntryPrice;
-            
-            await AddPointsAsync(authToken, userId, (decimal)trade.TakeProfit);
-            return await UpdateTradeAsync(authToken, userId, trade);
+            return FormatErrorMessage("Trade not found");
         }
-        catch (FirebaseAuthException e)
+        if (!trade.IsActive)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
-        }
-        catch (Exception e)
-        {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage("Trade is not Active");
         }
 
-        return response;
+        trade.ExitPrice = exitPrice;
+        trade.ExitTime = exitTime;
+        trade.IsActive = false;
+        trade.TakeProfit = trade.ExitPrice - trade.EntryPrice;
+
+        await AddPointsAsync(authToken, userId, (decimal)trade.TakeProfit);
+        return await UpdateTradeAsync(authToken, userId, trade);
     }
 
     public async Task<string> CreateUserAsync(string authToken, string userId)
     {
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
         User user = new User();
         user.Points = 100000;
         user.Watchlist = new List<string>();
         user.Trades = new Dictionary<string, Trade>();
-        var response = "";
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.CreateUser, userId, user);
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.CreateUser, userId, user);
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
 
     public async Task<string> ReadUserAsync(string authToken, string userId)
     {
-        var response = "";
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.ReadUser, userId, new { });
+            var response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.ReadUser, userId, new { });
             if (string.IsNullOrEmpty(response) || response == "null")
             {
                 return await CreateUserAsync(authToken, userId);
             }
+            return response;
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
-
 
     public async Task<decimal> GetPointsAsync(string authToken, string userId)
     {
-        var response =0;
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = Int32.Parse(await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.GetPoints, userId, new { }));
+            var response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.GetPoints, userId, new { });
+            return int.TryParse(response, out int points) ? points : -999;
         }
-        catch (FirebaseAuthException e)
+        catch (FirebaseAuthException)
         {
-            response = -999;
-            
+            return -999;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            response = -999;
-            
+            return -999;
         }
-
-        return response;
     }
 
     public async Task<string> AddPointsAsync(string authToken, string userId, decimal addPoints)
     {
-        var response = "";
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var points = await GetPointsAsync(authToken, userId);
+        if (points == -999)
+        {
+            return FormatErrorMessage("Error getting points");
+        }
+
+        points += addPoints;
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
         try
         {
-            if (!IsValidUser(authToken, userId).Result)
-            {
-                return FormatErrorMessage("Invalid User Session");
-            }
-
-             var Points = await GetPointsAsync(authToken, userId);
-
-            if (Points == -999)
-            {
-                return FormatErrorMessage("Error getting points");
-            }
-
-            Points += addPoints;
-
-
-            var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
-            response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddPoints, userId, new { Points });
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddPoints, userId, new { Points = points });
         }
         catch (FirebaseAuthException e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
         catch (Exception e)
         {
-            response = FormatErrorMessage(e.Message.Split('\n')[0]);
-            
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
         }
-
-        return response;
     }
 }
