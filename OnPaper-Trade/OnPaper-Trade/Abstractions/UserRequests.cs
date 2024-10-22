@@ -8,7 +8,7 @@ public class EnterTradeRequest
     public required string StockToken { get; set; }
     public required string ExchangeCode { get; set; }
     public required long EntryTime { get; set; }
-    public required int EntryPrice { get; set; }
+    public required decimal EntryPrice { get; set; }
     public required int Quantity { get; set; }
 }
 
