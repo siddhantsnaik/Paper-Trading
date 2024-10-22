@@ -252,7 +252,7 @@ public class TradeService
         try
         {
             var response = await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.GetPoints, userId, new { });
-            return int.TryParse(response, out int points) ? points : -999;
+            return decimal.TryParse(response, out decimal points) ? points : -999;
         }
         catch (FirebaseAuthException)
         {
