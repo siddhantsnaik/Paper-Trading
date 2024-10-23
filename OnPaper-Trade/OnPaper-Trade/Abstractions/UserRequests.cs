@@ -49,3 +49,13 @@ public class SuccessData
     public string commodity_trade_date { get; set; }
     public string commodity_allowed { get; set; }
 }
+
+public class WatchListRequest
+{
+    public required string AuthToken { get; set; }
+    public required string UserID { get; set; }
+    public string StockToken { get; set; }
+    public string StockName { get; set; }
+    public string StockCode { get; set; }
+    public string ExchangeCode { get; set; }
+}

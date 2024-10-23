@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using FirebaseAdmin.Auth;
+using System.Diagnostics.Contracts;
 
 
 namespace OnPaper_Trade.Controllers;
@@ -65,6 +66,40 @@ public class tradeController : Controller
             return BadRequest(response);
         }
         return Ok(response);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> AddToWatchList([FromBody] WatchListRequest request)
+    {
+        WatchItem watchItem = new WatchItem();
+        watchItem.ExchangeCode = request.ExchangeCode;
+        watchItem.StockCode = request.StockCode;
+        watchItem.StockToken = request.StockToken;
+        watchItem.StockName = request.StockName;
+        var response = await _tradeService.AddToWatchList(request.AuthToken, request.UserID, watchItem);
+
+        if (response.StartsWith("{ \"error\":"))
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> RemoveFromWatch([FromBody] WatchListRequest request)
+    {
+        string AuthToken = request.AuthToken;
+        string UserId = request.UserID;
+        string StockCode = request.StockCode;
+
+        var response = await _tradeService.RemoveFromWatchList(AuthToken, UserId, StockCode);
+
+        if (response.StartsWith("{ \"error\":"))
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+
     }
 
     [HttpGet]

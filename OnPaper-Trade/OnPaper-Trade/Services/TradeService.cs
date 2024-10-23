@@ -3,6 +3,7 @@ using FirebaseAdmin;
 using OnPaper_Trade.Abstractions;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace OnPaper_Trade.Services;
 
@@ -201,7 +202,7 @@ public class TradeService
 
         User user = new User();
         user.Points = 100000;
-        user.Watchlist = new List<string>();
+        user.Watchlist = new Dictionary<string,WatchItem>();
         user.Trades = new Dictionary<string, Trade>();
 
         var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
@@ -283,6 +284,51 @@ public class TradeService
         try
         {
             return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddPoints, userId, new { Points = points });
+        }
+        catch (FirebaseAuthException e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
+        catch (Exception e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
+    }
+
+    public async Task<string> AddToWatchList(string authToken, string userId, WatchItem watch)
+    {
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
+
+        try
+        {
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.AddToWatchlist, userId, watch);
+        }
+        catch (FirebaseAuthException e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
+        catch (Exception e)
+        {
+            return FormatErrorMessage(e.Message.Split('\n')[0]);
+        }
+    }
+    public async Task<string> RemoveFromWatchList(string authToken, string userId, string watchItem)
+    {
+        if (!await IsValidUser(authToken, userId))
+        {
+            return FormatErrorMessage("Invalid User Session");
+        }
+
+        var endpoint = new FirebaseRealtimeDatabaseEndpointFactory(authToken).CreateEndpoint();
+
+        try
+        {
+            return await endpoint.SendRequestAsync(FirebaseRealtimeDatabaseEndpointsEnum.RemoveFromWatchlist, userId, watchItem);
         }
         catch (FirebaseAuthException e)
         {

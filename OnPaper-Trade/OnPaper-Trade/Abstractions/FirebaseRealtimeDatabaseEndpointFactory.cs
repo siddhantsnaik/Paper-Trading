@@ -14,7 +14,9 @@ public enum FirebaseRealtimeDatabaseEndpointsEnum
     UpdateUser,
     GetPoints,
     AddPoints,
-    UpdateWatchlist,
+    GetWatchlist,
+    AddToWatchlist,
+    RemoveFromWatchlist,
     CreateTrade,
     ReadTrade,
     UpdateTrade,
@@ -102,10 +104,29 @@ public class FirebaseRealtimeDatabaseEndpoint
                     Console.WriteLine($"Headers: {response.Headers} \n Response: {response.Content}");
                     break;
 
-                case FirebaseRealtimeDatabaseEndpointsEnum.UpdateWatchlist:
+                case FirebaseRealtimeDatabaseEndpointsEnum.GetWatchlist:
                     url += "/watchlist.json";
+                    response = await _httpClient.GetAsync(AppendAuth(url));
+                    break;
+
+                case FirebaseRealtimeDatabaseEndpointsEnum.AddToWatchlist:
+                    var watchItem = (WatchItem)payload;
+                    var watchSymbol = watchItem.StockCode;
+                    url += $"/watchlist/{watchSymbol}.json";
                     content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
                     response = await _httpClient.PutAsync(AppendAuth(url), content);
+                    break;
+                case FirebaseRealtimeDatabaseEndpointsEnum.RemoveFromWatchlist:
+                    if(payload is string watchID)
+                    { 
+                        url += $"/watchlist/{watchID}.json"; 
+                        content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+                        response = await _httpClient.DeleteAsync(AppendAuth(url));
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Payload must be a string (watchID) for Delete Watch Item operation");
+                    }
                     break;
 
                 case FirebaseRealtimeDatabaseEndpointsEnum.CreateTrade:

@@ -3,7 +3,7 @@
 public class User
 {
     public decimal Points { get; set; }
-    public List<string> Watchlist { get; set; }
+    public Dictionary<string, WatchItem> Watchlist { get; set; }
     public Dictionary<string, Trade> Trades { get; set; }
 }
 
@@ -24,4 +24,13 @@ public class Trade
     public string? EntryType { get; set; }
     public decimal? StopLoss { get; set; }
     public decimal? TakeProfit { get; set; }
+}
+
+public class WatchItem
+{
+    public string StockToken {get; set;}
+    public string StockName  {get; set;}
+    public string StockCode  { get; set; }
+    public string ExchangeCode { get; set; }
+
 }
