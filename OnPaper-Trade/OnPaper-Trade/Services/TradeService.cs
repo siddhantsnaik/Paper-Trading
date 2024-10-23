@@ -188,7 +188,7 @@ public class TradeService
         trade.IsActive = false;
         trade.TakeProfit = trade.ExitPrice - trade.EntryPrice;
 
-        await AddPointsAsync(authToken, userId, (decimal)trade.TakeProfit);
+        await AddPointsAsync(authToken, userId, (decimal)trade.ExitPrice);
         return await UpdateTradeAsync(authToken, userId, trade);
     }
 
