@@ -111,7 +111,7 @@ public class FirebaseRealtimeDatabaseEndpoint
 
                 case FirebaseRealtimeDatabaseEndpointsEnum.AddToWatchlist:
                     var watchItem = (WatchItem)payload;
-                    var watchSymbol = watchItem.StockCode;
+                    var watchSymbol = watchItem.StockToken;
                     url += $"/watchlist/{watchSymbol}.json";
                     content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
                     response = await _httpClient.PutAsync(AppendAuth(url), content);

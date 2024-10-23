@@ -90,9 +90,9 @@ public class tradeController : Controller
     {
         string AuthToken = request.AuthToken;
         string UserId = request.UserID;
-        string StockCode = request.StockCode;
+        string StockToken = request.StockToken;
 
-        var response = await _tradeService.RemoveFromWatchList(AuthToken, UserId, StockCode);
+        var response = await _tradeService.RemoveFromWatchList(AuthToken, UserId, StockToken);
 
         if (response.StartsWith("{ \"error\":"))
         {
