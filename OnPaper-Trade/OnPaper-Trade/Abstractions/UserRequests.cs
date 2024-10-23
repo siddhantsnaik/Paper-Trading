@@ -55,7 +55,7 @@ public class WatchListRequest
     public required string AuthToken { get; set; }
     public required string UserID { get; set; }
     public string StockToken { get; set; }
-    public string StockName { get; set; }
-    public string StockCode { get; set; }
-    public string ExchangeCode { get; set; }
+    public string? StockName { get; set; }
+    public string? StockCode { get; set; }
+    public string? ExchangeCode { get; set; }
 }
