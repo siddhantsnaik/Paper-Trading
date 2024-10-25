@@ -1,5 +1,3 @@
----
-
 # Paper-Trading
 
 This repository contains the microservices middleware built using .NET Web API for the OnPaper paper trading application. It includes two primary microservices:
@@ -114,7 +112,3 @@ We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-You can copy and paste this content into your README.md file in the repository.
