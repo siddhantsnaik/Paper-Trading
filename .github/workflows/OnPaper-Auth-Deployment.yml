@@ -28,7 +28,7 @@ jobs:
     
     - name: Build and push Docker image to DockerHub
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/onpaper-auth:${{ github.sha }} ./OnPaper-Auth
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/onpaper-auth:${{ github.sha }} ./OnPaper-Auth/OnPaper-Auth
         echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/onpaper-auth:${{ github.sha }}
 
