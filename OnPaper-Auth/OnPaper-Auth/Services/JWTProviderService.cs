@@ -2,5 +2,5 @@
 
 public class JWTProviderService
 {
-    //Another line of useless code
+    //Another line of useless code.
 }
