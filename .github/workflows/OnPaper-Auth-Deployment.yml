@@ -25,12 +25,31 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    
+    - name: Build and push Docker image to DockerHub
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/onpaper-auth:${{ github.sha }} ./OnPaper-Auth
+        echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/onpaper-auth:${{ github.sha }}
 
+    - name: Container App deploy
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: ${{ github.workspace }}/OnPaper-Auth
+        acrName: ${{ env.CONTAINER_REGISTRY_NAME }}
+        acrUsername: ${{ secrets.OnPaper_USERNAME_660F }}
+        acrPassword: ${{ secrets.OnPaper_PASSWORD_660F }}
+        imageToBuild: ${{ env.CONTAINER_REGISTRY_LOGIN_SERVER }}/onpaper-auth:${{ github.sha }}
+        containerAppName: onpaper-auth
+        containerAppEnvironment: ${{ env.CONTAINER_APP_ENVIRONMENT_NAME }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+
+    
     - name: Azure login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.managedEnv20240830003908_SPN }}
-
+      
     - name: Container App deploy
       uses: azure/container-apps-deploy-action@v1
       with:
